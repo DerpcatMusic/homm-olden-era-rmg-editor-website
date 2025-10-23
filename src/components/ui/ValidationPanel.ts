@@ -1,9 +1,9 @@
 // Validation feedback panel
 // This class displays real-time validation results and error messages
 
-import { StateManager } from '../../store/StateManager';
-import { EventBus } from '../../store/EventBus';
-import { ValidationService } from '../../services/ValidationService';
+import { StateManager } from '../../store/StateManager.js';
+import { EventBus } from '../../store/EventBus.js';
+import { ValidationService } from '../../services/ValidationService.js';
 
 export class ValidationPanel {
     private container: HTMLElement;

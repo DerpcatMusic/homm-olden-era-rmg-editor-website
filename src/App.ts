@@ -1,24 +1,24 @@
 // Main application class for the RMG Editor
 // This class coordinates all services, manages UI components, and handles application lifecycle
 
-import { EventBus } from './store/EventBus';
-import { StateManager } from './store/StateManager';
-import { HistoryManager } from './store/HistoryManager';
-import { FileService } from './services/FileService';
-import { ExportService } from './services/ExportService';
-import { GameDataService } from './services/GameDataService';
-import { ValidationService } from './services/ValidationService';
-import { CanvasEditor } from './components/core/CanvasEditor';
-import { ZoneManager } from './components/core/ZoneManager';
-import { ConnectionEditor } from './components/core/ConnectionEditor';
-import { ZoneEditor } from './components/core/ZoneEditor';
-import { Sidebar } from './components/ui/Sidebar';
-import { PropertyPanel } from './components/ui/PropertyPanel';
-import { ValidationPanel } from './components/ui/ValidationPanel';
-import { ContentBrowser } from './components/dialogs/ContentBrowser';
-import { RMGTemplate } from './models/rmg';
-import { Orientation, Border, RiverSettings } from './models/types';
-import { ErrorBoundary, PerformanceMonitor, MemoryMonitor, debounce } from './utils/validation';
+import { EventBus } from './store/EventBus.js';
+import { StateManager } from './store/StateManager.js';
+import { HistoryManager } from './store/HistoryManager.js';
+import { FileService } from './services/FileService.js';
+import { ExportService } from './services/ExportService.js';
+import { GameDataService } from './services/GameDataService.js';
+import { ValidationService } from './services/ValidationService.js';
+import { CanvasEditor } from './components/core/CanvasEditor.js';
+import { ZoneManager } from './components/core/ZoneManager.js';
+import { ConnectionEditor } from './components/core/ConnectionEditor.js';
+import { ZoneEditor } from './components/core/ZoneEditor.js';
+import { Sidebar } from './components/ui/Sidebar.js';
+import { PropertyPanel } from './components/ui/PropertyPanel.js';
+import { ValidationPanel } from './components/ui/ValidationPanel.js';
+import { ContentBrowser } from './components/dialogs/ContentBrowser.js';
+import { RMGTemplate } from './models/rmg.js';
+import { Orientation, Border, RiverSettings } from './models/types.js';
+import { ErrorBoundary, PerformanceMonitor, MemoryMonitor, debounce } from './utils/validation.js';
 
 export class App {
     // Core services

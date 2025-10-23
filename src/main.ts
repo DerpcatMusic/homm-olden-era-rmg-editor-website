@@ -1,20 +1,26 @@
 // Main entry point for the RMG Editor web application
 // This file initializes the application and starts the main event loop
 
-import { App } from './App';
+import { App } from './App.js';
 
 async function main(): Promise<void> {
     try {
         console.log('Starting RMG Editor...');
 
         // Create and initialize the main application
+        console.log('Creating App instance...');
         const app = new App();
+        console.log('App instance created successfully');
 
         // Initialize the application
+        console.log('Initializing application...');
         await app.initialize();
+        console.log('Application initialized successfully');
 
         // Start the application
+        console.log('Starting application...');
         await app.start();
+        console.log('Application started successfully');
 
         console.log('RMG Editor started successfully');
 

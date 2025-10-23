@@ -1,9 +1,9 @@
 // File operations service
 // This class handles local file I/O operations and local storage persistence
 
-import { RMGTemplate } from '../models/rmg';
-import { GameData } from '../models/types';
-import { ValidationService } from './ValidationService';
+import { RMGTemplate } from '../models/rmg.js';
+import { GameData } from '../models/types.js';
+import { ValidationService } from './ValidationService.js';
 
 export class FileService {
     private validationService: ValidationService;

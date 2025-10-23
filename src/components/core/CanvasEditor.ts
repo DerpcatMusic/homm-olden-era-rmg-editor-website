@@ -1,12 +1,12 @@
 // Main visual editing interface for zones and connections
 // This class handles the HTML5 canvas for RMG template editing
 
-import { EventBus } from '../../store/EventBus';
-import { StateManager } from '../../store/StateManager';
-import { Zone, Connection, RMGTemplate } from '../../models/rmg';
-import { distance, pointInRectangle } from '../../utils/geometry';
-import { CanvasToolbar } from './CanvasToolbar';
-import { CanvasStatusBar } from './CanvasStatusBar';
+import { EventBus } from '../../store/EventBus.js';
+import { StateManager } from '../../store/StateManager.js';
+import { Zone, Connection, RMGTemplate } from '../../models/rmg.js';
+import { distance, pointInRectangle } from '../../utils/geometry.js';
+import { CanvasToolbar } from './CanvasToolbar.js';
+import { CanvasStatusBar } from './CanvasStatusBar.js';
 
 interface Point {
     x: number;

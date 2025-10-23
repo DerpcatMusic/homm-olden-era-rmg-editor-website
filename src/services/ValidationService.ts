@@ -1,8 +1,8 @@
 // Validation engine for RMG templates
 // This class handles comprehensive validation with C# RMG compatibility
 
-import { RMGTemplate } from '../models/rmg';
-import { GameDataService } from './GameDataService';
+import { RMGTemplate } from '../models/rmg.js';
+import { GameDataService } from './GameDataService.js';
 
 export class ValidationService {
     private rules: ValidationRule[] = [];

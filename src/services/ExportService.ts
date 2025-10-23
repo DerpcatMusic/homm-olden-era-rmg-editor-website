@@ -1,8 +1,8 @@
 // Export functionality for RMG templates
 // This class handles generating game-ready RMG files
 
-import { ValidationService } from './ValidationService';
-import { GameDataService } from './GameDataService';
+import { ValidationService } from './ValidationService.js';
+import { GameDataService } from './GameDataService.js';
 
 export class ExportService {
     private validationService: ValidationService;
