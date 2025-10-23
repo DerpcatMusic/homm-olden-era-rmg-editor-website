@@ -200,6 +200,14 @@ export class Sidebar {
                         <span class="value">${mandatoryContent}</span>
                     </div>
                 </div>
+                <div class="game-data-section">
+                    <h4>Game Data</h4>
+                    <div class="game-data-buttons">
+                        <button class="browse-units-btn">Browse Units</button>
+                        <button class="browse-heroes-btn">Browse Heroes</button>
+                        <button class="browse-artifacts-btn">Browse Artifacts</button>
+                    </div>
+                </div>
                 <button class="manage-content-btn">Manage Content</button>
             </div>
         `;
@@ -313,6 +321,27 @@ export class Sidebar {
         if (manageContentBtn) {
             manageContentBtn.addEventListener('click', () => {
                 this.eventBus.emit('content:manage');
+            });
+        }
+
+        const browseUnitsBtn = this.container.querySelector('.browse-units-btn') as HTMLButtonElement;
+        if (browseUnitsBtn) {
+            browseUnitsBtn.addEventListener('click', () => {
+                this.eventBus.emit('game-data:browse-units');
+            });
+        }
+
+        const browseHeroesBtn = this.container.querySelector('.browse-heroes-btn') as HTMLButtonElement;
+        if (browseHeroesBtn) {
+            browseHeroesBtn.addEventListener('click', () => {
+                this.eventBus.emit('game-data:browse-heroes');
+            });
+        }
+
+        const browseArtifactsBtn = this.container.querySelector('.browse-artifacts-btn') as HTMLButtonElement;
+        if (browseArtifactsBtn) {
+            browseArtifactsBtn.addEventListener('click', () => {
+                this.eventBus.emit('game-data:browse-artifacts');
             });
         }
     }

@@ -15,6 +15,7 @@ import { ZoneEditor } from './components/core/ZoneEditor';
 import { Sidebar } from './components/ui/Sidebar';
 import { PropertyPanel } from './components/ui/PropertyPanel';
 import { ValidationPanel } from './components/ui/ValidationPanel';
+import { ContentBrowser } from './components/dialogs/ContentBrowser';
 import { RMGTemplate } from './models/rmg';
 import { Orientation, Border, RiverSettings } from './models/types';
 import { ErrorBoundary, PerformanceMonitor, MemoryMonitor, debounce } from './utils/validation';
@@ -39,6 +40,7 @@ export class App {
     private sidebar: Sidebar | null = null;
     private propertyPanel: PropertyPanel | null = null;
     private validationPanel: ValidationPanel | null = null;
+    private contentBrowser: ContentBrowser | null = null;
 
     // Application state
     private isInitialized: boolean = false;
@@ -127,6 +129,11 @@ export class App {
             } else {
                 console.warn('Validation panel element not found');
             }
+
+            // Initialize content browser
+            console.log('Creating content browser...');
+            this.contentBrowser = new ContentBrowser(this.gameDataService);
+            console.log('Content browser created');
 
             // Setup state change observers
             this.setupStateObservers();
@@ -534,6 +541,19 @@ export class App {
             this.handleManageContent();
         });
 
+        // Game data events
+        this.eventBus.on('game-data:browse-units', () => {
+            this.handleBrowseUnits();
+        });
+
+        this.eventBus.on('game-data:browse-heroes', () => {
+            this.handleBrowseHeroes();
+        });
+
+        this.eventBus.on('game-data:browse-artifacts', () => {
+            this.handleBrowseArtifacts();
+        });
+
         // Property panel events
         this.eventBus.on('zone:updated', (data) => {
             this.handleZoneUpdated(data);
@@ -771,5 +791,25 @@ export class App {
         // Focus on the field that has the validation error
         // TODO: Implement field focusing logic based on result.field
         this.eventBus.emit('validation:focus-field', { field: result.field });
+    }
+
+    // Game data browsing handlers
+
+    private handleBrowseUnits(): void {
+        if (this.contentBrowser) {
+            this.contentBrowser.show('units');
+        }
+    }
+
+    private handleBrowseHeroes(): void {
+        if (this.contentBrowser) {
+            this.contentBrowser.show('heroes');
+        }
+    }
+
+    private handleBrowseArtifacts(): void {
+        if (this.contentBrowser) {
+            this.contentBrowser.show('artifacts');
+        }
     }
 }

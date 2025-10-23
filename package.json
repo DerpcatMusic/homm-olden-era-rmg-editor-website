@@ -5,7 +5,7 @@
   "main": "src/main.ts",
   "scripts": {
     "build": "tsc",
-    "build:web": "tsc && copy index.html dist\\ && copy styles.css dist\\",
+    "build:web": "tsc && copy index.html dist\\ && copy styles.css dist\\ && copy _headers dist\\ && copy _redirects dist\\",
     "start": "node dist/main.js",
     "serve": "pnpm exec http-server dist -p 3000 -c-1 --cors",
     "dev": "pnpm run build:web && tsc --watch & pnpm exec http-server dist -p 3000 -c-1 --cors",

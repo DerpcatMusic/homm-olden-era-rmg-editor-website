@@ -1,11 +1,17 @@
 // Content selection dialogs
 // This class handles content browsing and selection for RMG templates
 
+import { GameDataService } from '../../services/GameDataService';
+import { Content } from '../../services/GameDataService';
+
 export class ContentBrowser {
     private dialog!: HTMLDialogElement;
     private selectedContent: any[] = [];
+    private gameDataService: GameDataService;
+    private contentType: 'units' | 'heroes' | 'artifacts' | 'all' = 'all';
 
-    constructor() {
+    constructor(gameDataService: GameDataService) {
+        this.gameDataService = gameDataService;
         this.createDialog();
         this.setupEventHandlers();
     }
@@ -58,8 +64,8 @@ export class ContentBrowser {
         typeFilter.addEventListener('change', () => this.filterContent());
     }
 
-    public show(): void {
-        // TODO: Show dialog and load content
+    public show(contentType: 'units' | 'heroes' | 'artifacts' | 'all' = 'all'): void {
+        this.contentType = contentType;
         this.loadContent();
         this.dialog.showModal();
     }
@@ -70,25 +76,38 @@ export class ContentBrowser {
     }
 
     private loadContent(): void {
-        // TODO: Load and display available content
         const contentList = this.dialog.querySelector('.content-list') as HTMLElement;
         contentList.innerHTML = '<p>Loading content...</p>';
 
-        // TODO: Fetch content from game data service
-        // Placeholder content for now
-        const placeholderContent = [
-            { id: '1', name: 'Town Hall', type: 'buildings' },
-            { id: '2', name: 'Gold Mine', type: 'buildings' },
-            { id: '3', name: 'Peasant', type: 'creatures' },
-        ];
+        // Fetch content from game data service based on type
+        let content: Content[] = [];
+        switch (this.contentType) {
+            case 'units':
+                content = this.gameDataService.getUnits();
+                break;
+            case 'heroes':
+                content = this.gameDataService.getHeroes();
+                break;
+            case 'artifacts':
+                content = this.gameDataService.getArtifacts();
+                break;
+            case 'all':
+            default:
+                content = this.gameDataService.searchContent('');
+                break;
+        }
 
-        this.displayContent(placeholderContent);
+        this.displayContent(content);
     }
 
-    private displayContent(content: any[]): void {
-        // TODO: Render content items in the list
+    private displayContent(content: Content[]): void {
         const contentList = this.dialog.querySelector('.content-list') as HTMLElement;
         contentList.innerHTML = '';
+
+        if (content.length === 0) {
+            contentList.innerHTML = '<p>No content available</p>';
+            return;
+        }
 
         content.forEach(item => {
             const itemElement = document.createElement('div');
@@ -98,6 +117,7 @@ export class ContentBrowser {
                 <input type="checkbox" class="content-checkbox">
                 <span class="content-name">${item.name}</span>
                 <span class="content-type">${item.type}</span>
+                <span class="content-id">${item.id}</span>
             `;
 
             itemElement.addEventListener('click', (e) => {
@@ -113,9 +133,44 @@ export class ContentBrowser {
     }
 
     private filterContent(): void {
-        // TODO: Filter content based on search and type filters
-        // Placeholder implementation
-        console.log('Filtering content...');
+        const searchInput = this.dialog.querySelector('.search-input') as HTMLInputElement;
+        const typeFilter = this.dialog.querySelector('.content-type-filter') as HTMLSelectElement;
+
+        const searchTerm = searchInput.value.toLowerCase();
+        const typeFilterValue = typeFilter.value;
+
+        // Get current content based on type
+        let content: Content[] = [];
+        switch (this.contentType) {
+            case 'units':
+                content = this.gameDataService.getUnits();
+                break;
+            case 'heroes':
+                content = this.gameDataService.getHeroes();
+                break;
+            case 'artifacts':
+                content = this.gameDataService.getArtifacts();
+                break;
+            case 'all':
+            default:
+                content = this.gameDataService.searchContent('');
+                break;
+        }
+
+        // Apply filters
+        let filteredContent = content;
+        if (searchTerm) {
+            filteredContent = filteredContent.filter(item =>
+                item.name.toLowerCase().includes(searchTerm) ||
+                item.id.toLowerCase().includes(searchTerm)
+            );
+        }
+
+        if (typeFilterValue !== 'all') {
+            filteredContent = filteredContent.filter(item => item.type === typeFilterValue);
+        }
+
+        this.displayContent(filteredContent);
     }
 
     private updateSelection(): void {
