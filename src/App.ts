@@ -542,6 +542,15 @@ export class App {
     // Private methods
 
     private setupEventHandlers(): void {
+        // Setup DOM event listeners for header buttons
+        this.setupHeaderButtonHandlers();
+
+        // Setup DOM event listeners for toolbar buttons
+        this.setupToolbarButtonHandlers();
+
+        // Setup DOM event listeners for sidebar buttons
+        this.setupSidebarButtonHandlers();
+
         // Template events
         this.eventBus.on('template:loaded', (template) => {
             this.onTemplateLoaded(template);
@@ -608,6 +617,133 @@ export class App {
                 this.onStateChanged(oldState, newState);
             }
         });
+    }
+
+    private setupHeaderButtonHandlers(): void {
+        if (typeof document === 'undefined') return;
+
+        // New template button
+        const newBtn = document.getElementById('new-template-btn');
+        if (newBtn) {
+            newBtn.addEventListener('click', () => {
+                this.createNewTemplate();
+            });
+        }
+
+        // Open template button
+        const openBtn = document.getElementById('open-template-btn');
+        if (openBtn) {
+            openBtn.addEventListener('click', () => {
+                this.loadTemplate();
+            });
+        }
+
+        // Save template button
+        const saveBtn = document.getElementById('save-template-btn');
+        if (saveBtn) {
+            saveBtn.addEventListener('click', () => {
+                this.saveTemplate();
+            });
+        }
+
+        // Export template button
+        const exportBtn = document.getElementById('export-template-btn');
+        if (exportBtn) {
+            exportBtn.addEventListener('click', () => {
+                this.exportTemplate();
+            });
+        }
+
+        // Create first template button (canvas placeholder)
+        const createFirstBtn = document.getElementById('create-first-template-btn');
+        if (createFirstBtn) {
+            createFirstBtn.addEventListener('click', () => {
+                this.createNewTemplate();
+            });
+        }
+    }
+
+    private setupToolbarButtonHandlers(): void {
+        if (typeof document === 'undefined') return;
+
+        // Undo button
+        const undoBtn = document.getElementById('undo-btn');
+        if (undoBtn) {
+            undoBtn.addEventListener('click', () => {
+                this.undo();
+            });
+        }
+
+        // Redo button
+        const redoBtn = document.getElementById('redo-btn');
+        if (redoBtn) {
+            redoBtn.addEventListener('click', () => {
+                this.redo();
+            });
+        }
+
+        // Zoom in button
+        const zoomInBtn = document.getElementById('zoom-in-btn');
+        if (zoomInBtn) {
+            zoomInBtn.addEventListener('click', () => {
+                // TODO: Implement zoom in functionality
+                console.log('Zoom in requested');
+            });
+        }
+
+        // Zoom out button
+        const zoomOutBtn = document.getElementById('zoom-out-btn');
+        if (zoomOutBtn) {
+            zoomOutBtn.addEventListener('click', () => {
+                // TODO: Implement zoom out functionality
+                console.log('Zoom out requested');
+            });
+        }
+
+        // Fit view button
+        const fitViewBtn = document.getElementById('fit-view-btn');
+        if (fitViewBtn) {
+            fitViewBtn.addEventListener('click', () => {
+                // TODO: Implement fit view functionality
+                console.log('Fit view requested');
+            });
+        }
+
+        // Validate button
+        const validateBtn = document.getElementById('validate-btn');
+        if (validateBtn) {
+            validateBtn.addEventListener('click', () => {
+                this.eventBus.emit('validation:run');
+            });
+        }
+    }
+
+    private setupSidebarButtonHandlers(): void {
+        if (typeof document === 'undefined') return;
+
+        // Add zone button (in sidebar)
+        const addZoneBtn = document.getElementById('add-zone-btn');
+        if (addZoneBtn) {
+            addZoneBtn.addEventListener('click', () => {
+                this.eventBus.emit('zone:add');
+            });
+        }
+
+        // Add connection button (in sidebar)
+        const addConnectionBtn = document.getElementById('add-connection-btn');
+        if (addConnectionBtn) {
+            addConnectionBtn.addEventListener('click', () => {
+                this.eventBus.emit('connection:add');
+            });
+        }
+
+        // Manage content button (in sidebar)
+        const manageContentBtn = document.getElementById('manage-content-btn');
+        if (manageContentBtn) {
+            manageContentBtn.addEventListener('click', () => {
+                this.eventBus.emit('content:manage');
+            });
+        }
     }
 
     private setupKeyboardShortcuts(): void {
