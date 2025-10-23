@@ -56,10 +56,11 @@ export class App {
         this.historyManager = new HistoryManager();
 
         // Initialize business services
-        this.fileService = new FileService();
-        this.exportService = new ExportService();
+        // Share a single GameDataService instance across validation and export to honor uploaded game data
         this.gameDataService = new GameDataService();
-        this.validationService = new ValidationService();
+        this.validationService = new ValidationService(this.gameDataService);
+        this.exportService = new ExportService(this.validationService, this.gameDataService);
+        this.fileService = new FileService(this.validationService);
 
         // Initialize UI components (non-DOM dependent)
         this.zoneManager = new ZoneManager();
@@ -85,10 +86,15 @@ export class App {
             // Setup event handlers first (before DOM-dependent initialization)
             this.setupEventHandlers();
 
-            // Initialize game data service first (required for other services)
+            // Initialize game data service (optional on first run; user can upload DB/generator later)
             console.log('Loading game data...');
-            await this.gameDataService.loadGameData();
-            console.log('Game data loaded successfully');
+            try {
+                await this.gameDataService.loadGameData();
+                console.log('Game data loaded successfully');
+            } catch (e) {
+                console.warn('Game data not loaded. Use "Load Data" to upload DB and generator folders.', e);
+                this.showUserFeedback('Game data not found. Click "Load Data" and select DB and generator folders.', 'warning');
+            }
 
             // Initialize canvas editor if we have a canvas element
             console.log('Initializing canvas editor...');
@@ -634,6 +640,41 @@ export class App {
         if (openBtn) {
             openBtn.addEventListener('click', () => {
                 this.loadTemplate();
+            });
+        }
+
+        // Load game data (DB + generator) button
+        const loadDataBtn = document.getElementById('load-game-data-btn');
+        if (loadDataBtn) {
+            loadDataBtn.addEventListener('click', () => {
+                const input = document.getElementById('game-data-input') as HTMLInputElement | null;
+                if (input) {
+                    input.value = '';
+                    input.click();
+                } else {
+                    this.showUserFeedback('Upload control not found', 'error');
+                }
+            });
+        }
+
+        // Hidden folder input change handler
+        const gameDataInput = document.getElementById('game-data-input') as HTMLInputElement | null;
+        if (gameDataInput) {
+            gameDataInput.addEventListener('change', async (event) => {
+                const files = (event.target as HTMLInputElement).files;
+                if (files && files.length > 0) {
+                    try {
+                        this.showUserFeedback('Loading game data from uploaded folders...', 'info');
+                        await this.gameDataService.loadGameDataFromFiles(files);
+                        this.showUserFeedback('Game data loaded successfully from uploaded folders', 'success');
+                        this.eventBus.emit('game-data:loaded');
+                    } catch (err: any) {
+                        console.error('Failed to load uploaded game data:', err);
+                        this.showUserFeedback(`Failed to load game data: ${err?.message || 'Unknown error'}`, 'error');
+                    }
+                } else {
+                    this.showUserFeedback('No files selected for game data.', 'warning');
+                }
             });
         }
 

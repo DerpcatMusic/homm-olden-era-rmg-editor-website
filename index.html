@@ -47,6 +47,9 @@
                     <button id="open-template-btn" class="btn btn-secondary" title="Open Template (Ctrl+O)">
                         <i class="fas fa-folder-open"></i> Open
                     </button>
+                    <button id="load-game-data-btn" class="btn btn-secondary" title="Load Game Data (Upload your game folder)">
+                        <i class="fas fa-database"></i> Load Data
+                    </button>
                     <button id="save-template-btn" class="btn btn-primary" title="Save Template (Ctrl+S)">
                         <i class="fas fa-save"></i> Save
                     </button>
@@ -202,6 +205,9 @@
 
     <!-- Hidden file input for loading templates -->
     <input type="file" id="file-input" accept=".rmg.json" style="display: none;">
+
+    <!-- Hidden folder input for loading game data (DB and generator folders) -->
+    <input type="file" id="game-data-input" webkitdirectory multiple style="display: none;">
 
     <!-- Scripts -->
     <script type="module" src="dist/main.js"></script>

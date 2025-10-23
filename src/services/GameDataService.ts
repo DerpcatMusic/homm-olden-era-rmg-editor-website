@@ -7,6 +7,9 @@ export class GameDataService {
     private biomes: Biome[] = [];
     private factions: Faction[] = [];
     private contentMap: Map<string, Content> = new Map();
+    // Local upload support
+    private localFiles: Map<string, File> = new Map();
+    private useLocalData: boolean = false;
 
     constructor() {
         // Initialize game data service
@@ -14,10 +17,13 @@ export class GameDataService {
 
     public async loadGameData(): Promise<void> {
         try {
-            console.log('Loading game data from source directory...');
-
-            // Load actual game data from the source directory
-            await this.loadFromSourceDirectory();
+            if (this.useLocalData && this.localFiles.size > 0) {
+                console.log('Loading game data from uploaded folders...');
+                await this.loadFromLocalFiles();
+            } else {
+                console.log('Loading game data from source directory...');
+                await this.loadFromSourceDirectory();
+            }
 
             // Build content map for quick lookups
             this.buildContentMap();
@@ -25,34 +31,40 @@ export class GameDataService {
             // Extract biomes and factions
             this.extractBiomesAndFactions();
 
-            console.log('Game data loaded successfully from source directory');
+            console.log('Game data loaded successfully');
         } catch (error) {
             console.error('Failed to load game data:', error);
-            throw new Error(`Game data loading failed: ${error}`);
+            throw new Error(`Game data loading failed: ${error instanceof Error ? error.message : String(error)}`);
         }
     }
 
+    public async loadGameDataFromFiles(files: File[] | FileList): Promise<void> {
+        // Index uploaded files by their webkitRelativePath (or name)
+        this.localFiles.clear();
+        const list = Array.from(files);
+        for (const f of list) {
+            const key = ('webkitRelativePath' in f && f.webkitRelativePath)
+                ? f.webkitRelativePath.replace(/^[\\/]+/, '')
+                : f.name;
+            this.localFiles.set(key.replace(/\\/g, '/'), f);
+        }
+        this.useLocalData = true;
+        await this.loadGameData();
+    }
+
     private async loadFromSourceDirectory(): Promise<void> {
-        // Load data.json for basic game configuration
-        const dataResponse = await fetch('/source/DB/data.json');
-        const dataJson = await dataResponse.json();
-
-        // Load stats info
-        const statsResponse = await fetch('/source/DB/stats/stats_info.json');
-        const statsJson = await statsResponse.json();
-
-        // Load generator config
-        const generatorConfigResponse = await fetch('/source/generator/generator_config.json');
-        const generatorConfigJson = await generatorConfigResponse.json();
+        const dataJson = await this.readJson('/source/DB/data.json');
+        const statsJson = await this.readJson('/source/DB/stats/stats_info.json');
+        const generatorConfigJson = await this.readJson('/source/generator/generator_config.json');
 
         // Initialize game data structure
         this.gameData = {
             biomes: [],
-            factions: dataJson.fractions || [],
+            factions: (dataJson?.fractions) || [],
             objects: [],
             metaObjects: [],
             waterTypes: [],
-            stats: statsJson.array || [],
+            stats: (statsJson?.array) || [],
             generatorConfig: generatorConfigJson
         };
 
@@ -75,10 +87,8 @@ export class GameDataService {
     private async loadFactionsData(): Promise<void> {
         // Load fractions configuration
         try {
-            const fractionsResponse = await fetch('/source/DB/fractions.json');
-            const fractionsJson = await fractionsResponse.json();
-
-            this.gameData!.factions = fractionsJson.fractions || [];
+            const fractionsJson = await this.readJson('/source/DB/fractions.json');
+            this.gameData!.factions = (fractionsJson?.fractions) || this.gameData!.factions || [];
         } catch (error) {
             console.warn('Could not load fractions.json, using basic faction data');
         }
@@ -103,9 +113,8 @@ export class GameDataService {
 
     private async loadUnitFile(path: string): Promise<GameObject[]> {
         try {
-            const response = await fetch(path);
-            const unitJson = await response.json();
-            return unitJson.array || [];
+            const unitJson = await this.readJson(path);
+            return unitJson?.array || [];
         } catch (error) {
             console.warn(`Could not load unit file ${path}:`, error);
             return [];
@@ -129,9 +138,8 @@ export class GameDataService {
 
     private async loadHeroFile(path: string): Promise<GameObject[]> {
         try {
-            const response = await fetch(path);
-            const heroJson = await response.json();
-            return heroJson.array || [];
+            const heroJson = await this.readJson(path);
+            return heroJson?.array || [];
         } catch (error) {
             console.warn(`Could not load hero file ${path}:`, error);
             return [];
@@ -140,9 +148,8 @@ export class GameDataService {
 
     private async loadArtifactsData(): Promise<void> {
         try {
-            const response = await fetch('/source/DB/items/items/right_hand.json');
-            const artifactsJson = await response.json();
-            const artifacts = artifactsJson.array || [];
+            const artifactsJson = await this.readJson('/source/DB/items/items/right_hand.json');
+            const artifacts = artifactsJson?.array || [];
 
             // Add artifacts to objects array
             this.gameData!.objects.push(...artifacts);
@@ -295,6 +302,74 @@ export class GameDataService {
 
     public getUnits(): Content[] {
         return Array.from(this.contentMap.values()).filter(content => content.type === 'unit');
+    }
+
+    // Local vs remote JSON reader
+    private async readJson(path: string): Promise<any> {
+        if (this.useLocalData && this.localFiles.size > 0) {
+            // Normalize: remove leading "/source/" if present
+            let candidate = path.replace(/^\/?source\//, '').replace(/^\/+/, '');
+            candidate = candidate.replace(/\\/g, '/');
+
+            // Try exact match
+            let file = this.findLocalFile(candidate);
+            if (!file) {
+                // Also try without leading DB/ or generator/ if nested differently
+                file = this.findLocalFile(candidate.split('/').slice(-2).join('/')) || this.findLocalFile(candidate.split('/').pop() || '');
+            }
+            if (!file) {
+                throw new Error(`Local file not found: ${candidate}`);
+            }
+            const text = await file.text();
+            return JSON.parse(text);
+        } else {
+            const response = await fetch(path);
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status} for ${path}`);
+            }
+            return response.json();
+        }
+    }
+
+    private findLocalFile(relativePath: string): File | null {
+        const norm = relativePath.replace(/\\/g, '/');
+        if (this.localFiles.has(norm)) return this.localFiles.get(norm)!;
+        // Fallback: search by suffix match
+        for (const [key, value] of this.localFiles.entries()) {
+            if (key.endsWith(norm)) return value;
+        }
+        // Fallback: search by filename only (last segment)
+        const base = norm.split('/').pop();
+        if (base) {
+            for (const [key, value] of this.localFiles.entries()) {
+                if (key.endsWith('/' + base) || key === base) return value;
+            }
+        }
+        return null;
+    }
+
+    private async loadFromLocalFiles(): Promise<void> {
+        // Mirror loadFromSourceDirectory but using local files map
+        const dataJson = await this.readJson('DB/data.json');
+        const statsJson = await this.readJson('DB/stats/stats_info.json');
+        const generatorConfigJson = await this.readJson('generator/generator_config.json');
+
+        this.gameData = {
+            biomes: [],
+            factions: (dataJson?.fractions) || [],
+            objects: [],
+            metaObjects: [],
+            waterTypes: [],
+            stats: (statsJson?.array) || [],
+            generatorConfig: generatorConfigJson
+        };
+
+        await this.loadFactionsData();
+        await this.loadUnitsData();
+        await this.loadHeroesData();
+        await this.loadArtifactsData();
+
+        this.loadMetaObjects(generatorConfigJson);
     }
 
     public getHeroes(): Content[] {
