@@ -1,0 +1,28 @@
+{
+  "name": "rmg-editor-web",
+  "version": "1.0.0",
+  "description": "Heroes of Might & Magic Olden Era - RMG Editor Web Application",
+  "main": "src/main.ts",
+  "scripts": {
+    "build": "tsc",
+    "build:web": "tsc && copy index.html dist\\ && copy styles.css dist\\",
+    "start": "node dist/main.js",
+    "serve": "pnpm exec http-server dist -p 3000 -c-1 --cors",
+    "dev": "pnpm run build:web && tsc --watch & pnpm exec http-server dist -p 3000 -c-1 --cors",
+    "dev:web": "tsc --watch & pnpm exec http-server . -p 3000 -c-1 --cors",
+    "test": "pnpm exec jest",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "typescript": "^4.9.0"
+  },
+  "devDependencies": {
+    "@types/node": "^18.0.0",
+    "jest": "^29.0.0",
+    "@types/jest": "^29.0.0",
+    "http-server": "^14.1.1"
+  },
+  "keywords": ["heroes", "rmg", "editor", "map", "generator"],
+  "author": "",
+  "license": "MIT"
+}

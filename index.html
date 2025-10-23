@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Heroes of Might & Magic - RMG Editor</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+
+    <!-- Error Screen -->
+    <div id="error-screen" class="error-screen hidden">
+        <div class="error-content">
+            <i class="fas fa-exclamation-triangle error-icon"></i>
+            <h2>Application Error</h2>
+            <p id="error-message">An unexpected error occurred while loading the application.</p>
+            <button id="retry-button" class="btn btn-primary">Retry</button>
+        </div>
+    </div>
+
+    <!-- Main Application Container -->
+    <div id="app" class="app-container">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="header-left">
+                <h1 class="app-title">
+                    <i class="fas fa-map-marked-alt"></i>
+                    RMG Editor
+                </h1>
+                <span class="app-subtitle">Heroes of Might & Magic - Map Template Editor</span>
+            </div>
+            <div class="header-center">
+                <div class="file-info">
+                    <span id="current-file-name" class="file-name">No file loaded</span>
+                    <span id="unsaved-indicator" class="unsaved-indicator hidden">
+                        <i class="fas fa-circle"></i> Unsaved changes
+                    </span>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="header-actions">
+                    <button id="new-template-btn" class="btn btn-secondary" title="New Template (Ctrl+N)">
+                        <i class="fas fa-plus"></i> New
+                    </button>
+                    <button id="open-template-btn" class="btn btn-secondary" title="Open Template (Ctrl+O)">
+                        <i class="fas fa-folder-open"></i> Open
+                    </button>
+                    <button id="save-template-btn" class="btn btn-primary" title="Save Template (Ctrl+S)">
+                        <i class="fas fa-save"></i> Save
+                    </button>
+                    <button id="export-template-btn" class="btn btn-success" title="Export Template">
+                        <i class="fas fa-download"></i> Export
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Toolbar -->
+        <div class="app-toolbar">
+            <div class="toolbar-section">
+                <button id="undo-btn" class="btn btn-icon" title="Undo (Ctrl+Z)" disabled>
+                    <i class="fas fa-undo"></i>
+                </button>
+                <button id="redo-btn" class="btn btn-icon" title="Redo (Ctrl+Y)" disabled>
+                    <i class="fas fa-redo"></i>
+                </button>
+            </div>
+            <div class="toolbar-section">
+                <button id="zoom-in-btn" class="btn btn-icon" title="Zoom In">
+                    <i class="fas fa-search-plus"></i>
+                </button>
+                <button id="zoom-out-btn" class="btn btn-icon" title="Zoom Out">
+                    <i class="fas fa-search-minus"></i>
+                </button>
+                <button id="fit-view-btn" class="btn btn-icon" title="Fit to View">
+                    <i class="fas fa-expand"></i>
+                </button>
+            </div>
+            <div class="toolbar-section">
+                <button id="validate-btn" class="btn btn-warning" title="Validate Template">
+                    <i class="fas fa-check-circle"></i> Validate
+                </button>
+            </div>
+        </div>
+
+        <!-- Main Content Area -->
+        <div class="main-content">
+            <!-- Sidebar -->
+            <aside id="rmg-sidebar" class="sidebar">
+                <div class="sidebar-header">
+                    <h3>Template Structure</h3>
+                </div>
+                <div class="sidebar-content">
+                    <div class="sidebar-section">
+                        <div class="section-header">
+                            <h4>Zones</h4>
+                            <button id="add-zone-btn" class="btn btn-small btn-primary" title="Add Zone">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                        </div>
+                        <div id="zones-list" class="item-list">
+                            <!-- Zones will be populated here -->
+                        </div>
+                    </div>
+                    <div class="sidebar-section">
+                        <div class="section-header">
+                            <h4>Connections</h4>
+                            <button id="add-connection-btn" class="btn btn-small btn-primary" title="Add Connection">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                        </div>
+                        <div id="connections-list" class="item-list">
+                            <!-- Connections will be populated here -->
+                        </div>
+                    </div>
+                    <div class="sidebar-section">
+                        <div class="section-header">
+                            <h4>Content</h4>
+                            <button id="manage-content-btn" class="btn btn-small btn-secondary" title="Manage Content">
+                                <i class="fas fa-cog"></i>
+                            </button>
+                        </div>
+                        <div id="content-list" class="item-list">
+                            <!-- Content will be populated here -->
+                        </div>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Canvas Area -->
+            <main class="canvas-container">
+                <div class="canvas-wrapper">
+                    <canvas id="rmg-canvas" class="rmg-canvas"></canvas>
+                    <div id="canvas-overlay" class="canvas-overlay">
+                        <div class="canvas-placeholder">
+                            <i class="fas fa-map-marked-alt canvas-icon"></i>
+                            <h3>No Template Loaded</h3>
+                            <p>Create a new template or open an existing one to start editing</p>
+                            <button id="create-first-template-btn" class="btn btn-primary">
+                                <i class="fas fa-plus"></i> Create New Template
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div id="canvas-status-bar" class="canvas-status-bar">
+                    <div class="status-left">
+                        <span id="zoom-level">Zoom: 100%</span>
+                        <span id="cursor-position">Position: 0, 0</span>
+                    </div>
+                    <div class="status-center">
+                        <span id="canvas-mode">Mode: Select</span>
+                    </div>
+                    <div class="status-right">
+                        <span id="template-stats">Zones: 0 | Connections: 0</span>
+                    </div>
+                </div>
+            </main>
+
+            <!-- Property Panel -->
+            <aside id="rmg-property-panel" class="property-panel">
+                <div class="panel-header">
+                    <h3>Properties</h3>
+                </div>
+                <div class="panel-content">
+                    <div id="properties-container" class="properties-container">
+                        <!-- Properties will be populated here -->
+                    </div>
+                </div>
+            </aside>
+        </div>
+
+        <!-- Validation Panel -->
+        <div id="rmg-validation-panel" class="validation-panel hidden">
+            <div class="panel-header">
+                <h3>Validation Results</h3>
+                <button id="close-validation-btn" class="btn btn-icon btn-close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="panel-content">
+                <div id="validation-results" class="validation-results">
+                    <!-- Validation results will be populated here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Status Bar -->
+        <footer class="app-status-bar">
+            <div class="status-left">
+                <span id="app-status">Ready</span>
+            </div>
+            <div class="status-center">
+                <span id="memory-usage">Memory: -- MB</span>
+            </div>
+            <div class="status-right">
+                <span id="version-info">Version 1.0.0</span>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Hidden file input for loading templates -->
+    <input type="file" id="file-input" accept=".rmg.json" style="display: none;">
+
+    <!-- Scripts -->
+    <script src="main.js"></script>
+</body>
+</html>
