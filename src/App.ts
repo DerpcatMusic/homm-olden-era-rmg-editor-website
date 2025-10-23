@@ -61,7 +61,7 @@ export class App {
         this.gameDataService = new GameDataService();
         this.validationService = new ValidationService();
 
-        // Initialize UI components
+        // Initialize UI components (non-DOM dependent)
         this.zoneManager = new ZoneManager();
         this.connectionEditor = new ConnectionEditor(this.eventBus, this.stateManager);
         this.zoneEditor = new ZoneEditor(this.eventBus, this.stateManager);
@@ -69,9 +69,6 @@ export class App {
         // Setup error boundary and performance monitoring
         this.setupErrorBoundary();
         this.setupPerformanceMonitoring();
-
-        // Setup event handlers
-        this.setupEventHandlers();
     }
 
     /**
@@ -85,6 +82,8 @@ export class App {
         try {
             console.log('Initializing RMG Editor application...');
 
+            // Setup event handlers first (before DOM-dependent initialization)
+            this.setupEventHandlers();
 
             // Initialize game data service first (required for other services)
             console.log('Loading game data...');
