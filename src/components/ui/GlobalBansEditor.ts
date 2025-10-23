@@ -69,7 +69,7 @@ export class GlobalBansEditor {
         const addBanBtns = this.container.querySelectorAll('.add-ban-btn');
         addBanBtns.forEach(btn => {
             btn.addEventListener('click', (e) => {
-                const type = (e.target as HTMLElement).dataset.type!;
+                const type = (e.target as HTMLElement).dataset.type! as keyof GlobalBans;
                 this.addBan(type);
             });
         });
@@ -123,7 +123,7 @@ export class GlobalBansEditor {
             const banList = this.container.querySelector(`.ban-list[data-type="${type}"] .ban-items`) as HTMLElement;
             const bans = template.globalBans[type] || [];
 
-            banList.innerHTML = bans.map((ban, index) => `
+            banList.innerHTML = bans.map((ban: string, index: number) => `
                 <div class="ban-item">
                     <input type="text" class="ban-input" data-type="${type}" data-index="${index}" value="${ban}" placeholder="Enter ${type.slice(0, -1)} ID" />
                     <button class="remove-ban-btn" data-type="${type}" data-index="${index}">Remove</button>

@@ -82,7 +82,7 @@ export class ContentPoolEditor {
         if (!template) return;
 
         const poolItems = this.container.querySelector('.pool-items') as HTMLElement;
-        poolItems.innerHTML = template.contentPools.map((pool, index) => `
+        poolItems.innerHTML = template.contentPools.map((pool: ContentPoolConfig, index: number) => `
             <div class="pool-item ${index === this.currentPoolIndex ? 'active' : ''}" data-pool-index="${index}">
                 <span class="pool-name">${pool.name}</span>
                 <span class="pool-groups">${pool.groups.length} groups</span>
@@ -128,7 +128,7 @@ export class ContentPoolEditor {
             <div class="pool-groups">
                 <h4>Content Groups</h4>
                 <div class="groups-list">
-                    ${pool.groups.map((group, groupIndex) => `
+                    ${pool.groups.map((group: any, groupIndex: number) => `
                         <div class="group-item" data-group-index="${groupIndex}">
                             <div class="group-header">
                                 <span>Group ${groupIndex + 1} (Weight: ${group.weight})</span>
@@ -142,7 +142,7 @@ export class ContentPoolEditor {
                                 <div class="content-weights">
                                     <h5>Content Weights</h5>
                                     <div class="weights-list" data-group-index="${groupIndex}">
-                                        ${group.content.map((weight, weightIndex) => `
+                                        ${group.content.map((weight: ContentWeight, weightIndex: number) => `
                                             <div class="weight-item">
                                                 <input type="text" class="content-sid" placeholder="SID" value="${weight.sid || ''}" data-group="${groupIndex}" data-weight="${weightIndex}" />
                                                 <input type="number" class="content-weight" placeholder="Weight" value="${weight.weight}" data-group="${groupIndex}" data-weight="${weightIndex}" />
@@ -161,7 +161,7 @@ export class ContentPoolEditor {
             <div class="pool-bans">
                 <h4>Banned Content</h4>
                 <div class="bans-list">
-                    ${pool.bans.map((ban, banIndex) => `
+                    ${pool.bans.map((ban: ContentID, banIndex: number) => `
                         <div class="ban-item">
                             <input type="text" class="ban-sid" placeholder="SID" value="${ban.sid || ''}" data-ban="${banIndex}" />
                             <input type="number" class="ban-variant" placeholder="Variant" value="${ban.variant}" data-ban="${banIndex}" />

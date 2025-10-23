@@ -77,7 +77,7 @@ export class ContentListEditor {
         if (!template) return;
 
         const listItems = this.container.querySelector('.list-items') as HTMLElement;
-        listItems.innerHTML = template.contentLists.map((list, index) => `
+        listItems.innerHTML = template.contentLists.map((list: ContentList, index: number) => `
             <div class="list-item ${index === this.currentListIndex ? 'active' : ''}" data-list-index="${index}">
                 <span class="list-name">${list.name}</span>
                 <span class="list-content">${list.content.length} items</span>
@@ -110,7 +110,7 @@ export class ContentListEditor {
             <div class="content-items">
                 <h4>Content Items</h4>
                 <div class="items-list">
-                    ${list.content.map((item, itemIndex) => `
+                    ${list.content.map((item: ContentWeight, itemIndex: number) => `
                         <div class="content-item">
                             <input type="text" class="item-sid" placeholder="SID" value="${item.sid || ''}" data-item="${itemIndex}" />
                             <input type="number" class="item-variant" placeholder="Variant" value="${item.variant || -1}" data-item="${itemIndex}" />
