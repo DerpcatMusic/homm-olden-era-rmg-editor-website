@@ -335,7 +335,35 @@ export class App {
             zoneLayouts: [],
             mandatoryContent: [],
             contentCountLimits: [],
-            contentPools: [],
+            contentPools: [
+                {
+                    name: 'content_pool_default_guarded',
+                    valueDistribution: {
+                        priceBounds: [],
+                        weights: [1]
+                    },
+                    groups: [],
+                    bans: []
+                },
+                {
+                    name: 'content_pool_default_unguarded',
+                    valueDistribution: {
+                        priceBounds: [],
+                        weights: [1]
+                    },
+                    groups: [],
+                    bans: []
+                },
+                {
+                    name: 'content_pool_default_resources',
+                    valueDistribution: {
+                        priceBounds: [],
+                        weights: [1]
+                    },
+                    groups: [],
+                    bans: []
+                }
+            ],
             contentLists: []
         };
 
